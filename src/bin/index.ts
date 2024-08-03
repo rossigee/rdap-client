@@ -10,5 +10,5 @@ if (domain) {
       .then(response => console.dir(response, {depth: null}))
       .catch(console.error)
 } else {
-    console.log("Syntax: 'rdapClient https://example.com`");
+    console.log("Syntax: 'rdapClient https://example.com` or 'rdapClient 1.1.1.1'");
 }

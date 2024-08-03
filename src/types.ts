@@ -91,6 +91,12 @@ export interface RdapEntity {
   legalRepresentative: string
 }
 
+export interface RdapCidr {
+  v4prefix: string
+  v6prefix: string
+  length: number
+}
+
 export interface RdapRawResponse {
   objectClassName: string
   handle: string
@@ -104,4 +110,12 @@ export interface RdapRawResponse {
   notices: RdapNotice[]
   rdapConformance: string[]
   port43: string
+  name: string
+  type: string
+  ipVersion: string
+  startAddress: string
+  endAddress: string
+  cidr0_cidrs: RdapCidr[]
+  arin_originas0_originautnums: number[]
+  parentHandle: string
 }

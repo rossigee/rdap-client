@@ -23,6 +23,20 @@ describe("rdap tests", () => {
         }
     });
 
+    it("should find 1.1.1.1 successfully", async () => {
+        const response = await rdapClient("1.1.1.1");
+        assert.ok(response);
+        assert.strictEqual(response.name, "APNIC-LABS");
+        assert.strictEqual(response.startAddress, "1.1.1.0");
+    });
+
+    it("should find 2001:4860:4860::8888 successfully", async () => {
+        const response = await rdapClient("2001:4860:4860::8888");
+        assert.ok(response);
+        assert.strictEqual(response.name, "GOOGLE-IPV6");
+        assert.strictEqual(response.startAddress, "2001:4860::");
+    });
+
     it("should fail to lookup because there was no domain provided", async () => {
         try {
             await rdapClient("");

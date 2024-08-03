@@ -3,6 +3,9 @@ import { DomainExtension, TLDData, RdapRawResponse } from "./types";
 import { ERRORS } from "./constants";
 import { RdapData, RdapResponse } from "./libraries/RdapData";
 
+const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+const ipv6Regex = /(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/gi;
+
 let dns: Array<TLDData> = [];
 
 const isFullyQualifiedDomainName = (domain: string): boolean => {
@@ -104,12 +107,17 @@ function buildRdapRequestUrl(domainToQuery: string): string {
   return `${serverUrl}/domain/${query.hostname}`;
 }
 
-async function rdapClient(domain: string): Promise<RdapRawResponse> {
-  if (domain.trim() === "") {
+async function rdapClient(query: string): Promise<RdapRawResponse> {
+  if (query.trim() === "") {
     throw new Error(ERRORS.NoDomainError);
   }
 
-  const requestUrl = buildRdapRequestUrl(domain);
+  var requestUrl = "";
+  if (ipv4Regex.test(query) || ipv6Regex.test(query)) {
+    requestUrl = "https://rdap.org/ip/" + query;
+  } else {
+    requestUrl = buildRdapRequestUrl(query);
+  }
 
   try {
     const response = await fetch(requestUrl);
